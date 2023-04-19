@@ -1,0 +1,2 @@
+# FakeRunInFakeUniversity
+某大专智障体育自动化打卡思路分享
