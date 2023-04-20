@@ -103,3 +103,41 @@ Vary: Access-Control-Request-Headers
 0
 ```
 POST请求，传参如上，header里需要带有token做为认证信息。返回内容中：**sportRecordNo** 将会作为后台数据记录和计算的一个标识id。
+
+##### (4)上传数据
+
+```http
+POST https://sport.cqupt.edu.cn/wxapp/sportRecord/point/saveList HTTP/1.1
+Host: sport.cqupt.edu.cn
+Connection: keep-alive
+Content-Length: 1279
+charset: utf-8
+User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5017 MMWEBSDK/20230202 MMWEBID/9800 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
+content-type: application/json
+Accept-Encoding: gzip,compress,br,deflate
+token: 1_sr3fCDy8qL31dOG9AkOnDL6rP_jl5DaWuOkvc3SV4
+Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
+
+[{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:22","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:23","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:23","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:24","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:24","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:25","isValid":"1"}]
+
+HTTP/1.1 200 OK
+Server: rums/b
+Date: Mon, 20 Mar 2023 03:14:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+d2
+{"msg":"请求成功","code":"10200","data":{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","unifyId":"1670503","studentName":"李二狗","mileage":2.01,"timeConsuming":985,"expiredCountInForbiddenArea":0}}
+0
+```
+POST请求，传参一个列表包含五次收集的位置与时间，sportRecordNo参数用来标识这一次跑步数据，需要和开始打卡时获取的一致。header里带token标识身份。
+需要注意的时在 2023/04/01 前saveList请求的数据还是通过明文传输，之后学校便对这部分数据进行了加密，加密方便会在后面的小程序逆向细说。
+
+##### （5）获取用户信息
+```http
+```
+
+#TO BE CONTINUE...
