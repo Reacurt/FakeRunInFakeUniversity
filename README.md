@@ -25,6 +25,7 @@ openssl x509 -inform PEM -subject_hash_old -in certificate.pem
 
 ![图片](pic/抓包/1.png "将pem文件重命名为.0文件")
 
+
 然后将该.0文件移动到安卓机 **/system/etc/security/cacerts/** 目录下，之后设置好安卓机的代理，就可以愉快的抓包了。
 
 
