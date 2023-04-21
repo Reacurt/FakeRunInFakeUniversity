@@ -134,7 +134,23 @@ d2
 0
 ```
 POST请求，传参一个列表包含五次收集的位置与时间，sportRecordNo参数用来标识这一次跑步数据，需要和开始打卡时获取的一致。header里带token标识身份，返回的数据中包含了当前跑步的里程和耗时。
-需要注意的时在 2023/04/01 前saveList请求的数据还是通过明文传输，之后学校便对这部分数据进行了加密，加密方便会在后面的小程序逆向细说。
+需要注意的时在 2023/04/01 前saveList请求的数据还是通过明文传输，之后学校便对这部分数据进行了加密，加密方面会在后面的小程序逆向细说。
+
+更改后的请求如下：
+```http
+POST /wxapp/sportRecord/point/saveList?data=jYo6md14mqVKAifUFJJDCXOLQqfYXEGGVtdcwJtsmcRBI3pIFkFfJHNVvdVrF2gaRgvaz9hz21gMaM1fRRDNT74mcNytCnX7P4PtSNMguBh+6J5OGQ72cmBhn/LO4fyhup+dvnlaVNLFYhZIgEaeHiKSSPB5aBDc5XDoSG/9gldin0do/8or7/guATC+QIFV1dLLbJUNMa1/zmZV3Qw6Jrzwf0Tl28a2Why6Hr1330ETVKetpmATycGzvEhYo+avx5zgCjh2k9HfZf+hsPeVg8nvoHy8NwBYXnHJwZmgWSC+jFZALdOb24bwXOa++qeOISJBOtGfXfgiBJ4f4xlHi2hsdSXn/CXQC2/kD3iYTwfaumbELnI+D2V5OQyypv/DqTp6YskRi2DvY9Gcfv7PAmeSjMcWEEKu2miRRPk6bnqvxsBQeitC5w49OK0zdqnvAFy/Il9aKJCdeLycxIkjVKySy+qdyDsll/Jb8XI/1SfiYdgMrg3lkXX2P2TSG3f7Ximol1LSA6qsSufsZZrNDcffd13F8Yu0HTk/VaRLqbkbggLVdEGkCa8m3P3wMsCYuJDp9epjCvC1XyYFoCJ1KX2uoa7olOx1bs8hjowaIQy0W+CCbEdn01UCepWl7LlfwbtB7NLIc5fLbMTgo27HgAczYsQvn+dxRAbn/lVqVPxmrIIgih8cKisRMFD2aywfdqpGGeEP8McoyePlr0HA/V7t/jay5DO8YzdnL2EkpfJOaFOYkWzORHQr2GVG+nUVIJlej92ilpPNoSG4FRk6MlByuDgbLhrOuOQkSuj2CfwDMRsTu+RB2TaO3fbRbr3ZWrYTnelC8YnQuyApYqOqhu63bQJv7Y7wtEITfiFomtO+OpxFAvR1s3vaWmX0DeGjuHuYXpV5PmX5Rv/CqiB1vzdLvUFcU9p+7xnbO9Gyx07Zz4HSbMOrFtPzdpg2SXJmTNPXTA3PWcqOYQidS17B0SW7y/p5AEvzFFR8aod6z9mtiWmv9lhhooaI16MlgHc6KpVczolLcpr9AyiCSZJ+mvYmo8Iw1+szPL6+EXTChpkdw3AVhF0PEDCAPh70pmMlatf+G/NmtFtsheuQ+ikx307vOGeGtkTC1SolhbXYYMIx04fH4Hx/gmAsLtDkhIVmfQPtosbuaX3X0B0EkCEh9kEjekgWQV8kc1W91WsXaBpGC9rP2HPbWAxozV9FEM1PviZw3K0Kdfs/g+1I0yC4GB0ipR4CWAUodbtNdvM1zs/Tx7hurh7zgjwtbz4oYy820r+OTtwV0390w8OOQqHvUm3vpAkdnfGcMXKJVCM8MB/V0stslQ0xrX/OZlXdDDomvPB/ROXbxrZaHLoevXffQRNUp62mYBPJwbO8SFij5q/HnOAKOHaT0d9l/6Gw95WD+Js1p7zGv+2seMFq2LGdCb37GdZUvN97S/y8JYVKO1c=&aesKey=OsbJTCvQkD0fykjod75FGwmrGoI2urOeto37x86jc+TJS3tYHlrVdtkYAJp/Kkn2GCe8hiXjPTRc2bhUIQoAqHMegd8xboq04b80uC+z+b6KoQ8eRj8T1zgR6XnRr3JbJthdRzFh8RJWtd/HSHsBrrrDpPifFY5zGiqGIrMCZrw= HTTP/1.1
+Host: sport.cqupt.edu.cn
+Connection: keep-alive
+Content-Length: 200
+charset: utf-8
+User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5023 MMWEBSDK/20230202 MMWEBID/4258 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
+content-type: application/json
+Accept-Encoding: gzip,compress,br,deflate
+token: 5QFm-gwuRfdsdfsdfsdfsdf9Clf1mPr8
+Referer: https://servicewechat.com/wx1680cca9a19ee3c8/19/page-frame.html
+
+{"data":"dsdsd","aesKey":"OsbJTCvQkD0fykjod75FGwmrGoI2urOeto37x86jc+TJS3tYHlrVdtkYAJp/Kkn2GCe8hiXjPTRc2bhUIQoAqHMegd8xboq04b80uC+z+b6KoQ8eRj8T1zgR6XnRr3JbJthdRzFh8RJWtd/HSHsBrrrDpPifFY5zGiqGIrMCZrw="}
+```
 
 ##### （5）获取用户信息
 ```http
