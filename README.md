@@ -10,8 +10,8 @@
 
 fiddler的基本使用请参考 [fiddler入门](https://zhuanlan.zhihu.com/p/410150022)。
 没有经验请自行搜索 [fiddler抓包手机](https://www.bing.com/search?q=fiddler%E6%8A%93%E5%8C%85%E6%89%8B%E6%9C%BA&qs=n&form=QBRE&sp=-1&lq=0&pq=fiddler%E6%8A%93%E5%8C%85%E6%89%8B%E6%9C%BA&sc=10-11&sk=&cvid=5960BB3CE07349CEA21F08A998BFF7B3&ghsh=0&ghacc=0&ghpl=).
+安卓7以后想要使用fiddler抓到https的包需要将fiddler的证书添加到系统证书。这里可以使用雷电模拟器省去root的麻烦,没有经验可以参考 [fiddler抓包雷电模拟器](https://zhuanlan.zhihu.com/p/551547587)。
 
-安卓7以后想要使用fiddler抓到https的包需要将fiddler的证书添加到系统证书。这里可以使用雷电模拟器省去root的麻烦。
 导出fiddler的证书文件,cmd中运行命令将证书转换为pem文件：
 
 ```shell
@@ -29,11 +29,11 @@ openssl x509 -inform PEM -subject_hash_old -in certificate.pem
 然后将该.0文件移动到安卓机 **/system/etc/security/cacerts/** 目录下，之后设置好安卓机的代理，就可以愉快的抓包了。
 
 
-#### 2、小程序打卡过程分析
+#### 2、小程序通信过程分析
 
-##### (1)检查绑定
+##### （1）检查绑定
 ```http
-GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/checkBinding?wxCode=031xAh0w3VZJj03kGj2w3QDsZX2xAh0j HTTP/1.1
+GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/checkBinding?wxCode=031xAh0wasdsdasdasd3QDsZX2xAh0j HTTP/1.1
 Host: sport.cqupt.edu.cn
 Connection: keep-alive
 charset: utf-8
@@ -67,7 +67,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 79
-{"msg":"请求成功","code":"10200","data":{"msg":"绑定成功","token":"yrngxCDuNMxBejc2qqLHYTCqk7d7NgmXWNivEanO5vM"}}
+{"msg":"请求成功","code":"10200","data":{"msg":"绑定成功","token":"yrngxCDuNMxBasdasdasdasd7NgmXWNivEanO5vM"}}
 0
 ```
 
@@ -84,7 +84,7 @@ charset: utf-8
 User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5017 MMWEBSDK/20230202 MMWEBID/9800 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
 content-type: application/json
 Accept-Encoding: gzip,compress,br,deflate
-token: 1_sr3fCDy8qL31dOG9AkOnDL6rP_jl5DaWuOkvc3SV4
+token: 1_sr3fCDsadasdasdasdasd_jl5DaWuOkvc3SV4
 Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
 
 {"longitude":106.61017768012152,"latitude":29.532591417100694,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 10:58:58","isValid":"1"}
@@ -104,7 +104,7 @@ Vary: Access-Control-Request-Headers
 ```
 POST请求，传参如上，header里需要带有token做为认证信息。返回内容中：**sportRecordNo** 将会作为后台数据记录和计算的一个标识id。
 
-##### (4)上传数据
+##### （4）上传数据
 
 ```http
 POST https://sport.cqupt.edu.cn/wxapp/sportRecord/point/saveList HTTP/1.1
@@ -115,7 +115,7 @@ charset: utf-8
 User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5017 MMWEBSDK/20230202 MMWEBID/9800 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
 content-type: application/json
 Accept-Encoding: gzip,compress,br,deflate
-token: 1_sr3fCDy8qL31dOG9AkOnDL6rP_jl5DaWuOkvc3SV4
+token: 1_sr3fCDy8qLsdfsdfsdfsdfdfs_jl5DaWuOkvc3SV4
 Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
 
 [{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:22","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:23","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:23","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:24","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:24","isValid":"1"},{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:25","isValid":"1"}]
@@ -133,11 +133,100 @@ d2
 {"msg":"请求成功","code":"10200","data":{"sportRecordNo":"RBL039asdasdNOD8Aasdasda4YSEasadsdasd","unifyId":"1670503","studentName":"李二狗","mileage":2.01,"timeConsuming":985,"expiredCountInForbiddenArea":0}}
 0
 ```
-POST请求，传参一个列表包含五次收集的位置与时间，sportRecordNo参数用来标识这一次跑步数据，需要和开始打卡时获取的一致。header里带token标识身份。
+POST请求，传参一个列表包含五次收集的位置与时间，sportRecordNo参数用来标识这一次跑步数据，需要和开始打卡时获取的一致。header里带token标识身份，返回的数据中包含了当前跑步的里程和耗时。
 需要注意的时在 2023/04/01 前saveList请求的数据还是通过明文传输，之后学校便对这部分数据进行了加密，加密方便会在后面的小程序逆向细说。
 
 ##### （5）获取用户信息
 ```http
+GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/getUser HTTP/1.1
+Host: sport.cqupt.edu.cn
+Connection: keep-alive
+charset: utf-8
+User-Agent: Mozilla/5.0 (Linux; Android 9; PCLM10 Build/PQ3B.190801.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Safari/537.36 MMWEBID/9800 MicroMessenger/8.0.2.1860(0x28000234) Process/appbrand0 WeChat/arm32 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
+content-type: application/json
+Accept-Encoding: gzip,compress,br,deflate
+token: hfU6asdadsasduDZjBz24gaHWsadasdasdasd4CHI
+Referer: https://servicewechat.com/wx1680cca9a19ee3c8/20/page-frame.html
+
+HTTP/1.1 200 OK
+Server: rums/b
+Date: Fri, 21 Apr 2023 01:32:16 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+
+1df
+{"msg":"请求成功","code":"10200","data":{"id":15009,"avatar":null,"username":"李二狗","unifyId":"169xxxx","studentNo":"2029xxxxxx","sex":"6","grade":"2029","major":null,"deptName":"意大利面与42号混凝土学院","roleCode":"student","publicKey":"MIGfMA0GCSqGSIb3asdasdasdNADCBiQKBgQCkWZ+WLKvCPMaqx1B0/lzKHZQeMudeHf83n2MJjjdO+lqHr3xhQvnBYnQSizNdho3Gj9hxkfuIGhxX83VHmpfYPZHOb37KKZY8QwXAUg63NzJgyl4634me9YGXPNW7oKgAc/J6X8FphHgnFuVnTza0ce5Vq6vbKgcH1pP2cVgqbwIDAQAB"}}
+0
 ```
+GET请求，header里带token，用于获取学生的一些个人信息，本来这个接口与我们的目标无关，但四月后，他返回的信息里包含了一个公钥，用于加密saveList接口中要上传的数据。
+
+##### （6）结束打卡
+```http
+POST https://sport.cqupt.edu.cn/wxapp/sportRecord/sport/endList HTTP/1.1
+Host: sport.cqupt.edu.cn
+Connection: keep-alive
+Content-Length: 878
+charset: utf-8
+User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5017 MMWEBSDK/20230202 MMWEBID/9800 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
+content-type: application/json
+Accept-Encoding: gzip,compress,br,deflate
+token: 1_sr3fCasdasdasdasdsaddaasdasl5DaWuOkvc3SV4
+Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
+
+{"sportPointRequests":[[{"sportRecordNo":"asdasdasdasdAMO4J94YSEasdasdasda","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:39","isValid":"1"},{"sportRecordNo":"asdasdasdasdAMO4J94YSEasdasdasda","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:40","isValid":"1"},{"sportRecordNo":"asdasdasdasdAMO4J94YSEasdasdasda","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:41","isValid":"1"},{"sportRecordNo":"asdasdasdasdAMO4J94YSEasdasdasda","longitude":106.60938503689236,"latitude":29.533369411892362,"placeName":"太极运动场","placeCode":"T1005","collectTime":"2023-3-20 11:14:41","isValid":"1"}]]}
+
+HTTP/1.1 200 OK
+Server: rums/b
+Date: Mon, 20 Mar 2023 03:14:47 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+d2
+{"msg":"请求成功","code":"10200","data":{"sportRecordNo":"asdasdasdasdAMO4J94YSEasdasdasda","unifyId":"1670503","studentName":"李二狗","mileage":2.01,"timeConsuming":999,"expiredCountInForbiddenArea":0}}
+0
+```
+POST请求，传参一到五个定位点，header里带token，作为本次跑步的结束标志，返回结果里包含最终的里程数和耗时。
+
+##### （7）解除绑定
+```http
+PUT https://sport.cqupt.edu.cn/wxapp/wxUnifyId/binding/unlock HTTP/1.1
+Host: sport.cqupt.edu.cn
+Connection: keep-alive
+Content-Length: 90
+charset: utf-8
+User-Agent: Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/107.0.5304.141 Mobile Safari/537.36 XWEB/5017 MMWEBSDK/20230202 MMWEBID/9800 MicroMessenger/8.0.33.2320(0x28002151) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android
+content-type: application/json
+Accept-Encoding: gzip,compress,br,deflate
+token: yhTvPosadasdasdasdasdas7iZ6h26ANeqY
+Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
+
+{"wxCode":"041OasdasdasdasdasdasdasdOU0OIn1e","studentNo":"2029xxxxxx","unifyId":"169xxxx"}
+```
+
+少见的PUT请求，传参wxcode，认证码和学号，header带token，返回也很简单就是解绑成功或者失败。
+
+### 二、小程序逆向
+
+#### 1、起因
+按之前的抓包分析我们知道，小程序在请求saveList接口时，所上传的数据是经过加密的。我们上传时也需要把数据进行相同的处理，而具体的加密过程则可以在小程序内找到。
+
+#### 2、工具
+
+这里使用了开源工具 [wxappUnpacker](https://github.com/aen516954023/wxappUnpacker) 请参照连接内说明进行安装。
+
+安卓机内的小程序安装位置应该是位于：**/data/data/com.tencent.mm/MicroMsg/{一串id}/appbrand/{id}.wxapkg**
+
+实在找不到可以直接搜索 **wxapkg** 根据时间确定学校的小程序。
+
+#### 3、分析
+
+
 
 #TO BE CONTINUE...
