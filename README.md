@@ -1,12 +1,12 @@
 # FakeRunInFakeUniversity
 
-###### 某大专智障体育自动化打卡思路分享
+某大专智障体育自动化打卡思路分享
 
     本分享包含的内容有：网络抓包、小程序逆向、微信逆向。
 
-### 一、抓包
+## 一、抓包
 
-#### 1、使用fiddler+移动端微信抓包
+### 1、使用fiddler+移动端微信抓包
 
 fiddler的基本使用请参考 [fiddler入门](https://zhuanlan.zhihu.com/p/410150022)。
 没有经验请自行搜索 [fiddler抓包手机](https://www.bing.com/search?q=fiddler%E6%8A%93%E5%8C%85%E6%89%8B%E6%9C%BA&qs=n&form=QBRE&sp=-1&lq=0&pq=fiddler%E6%8A%93%E5%8C%85%E6%89%8B%E6%9C%BA&sc=10-11&sk=&cvid=5960BB3CE07349CEA21F08A998BFF7B3&ghsh=0&ghacc=0&ghpl=).
@@ -29,9 +29,9 @@ openssl x509 -inform PEM -subject_hash_old -in certificate.pem
 然后将该.0文件移动到安卓机 **/system/etc/security/cacerts/** 目录下，之后设置好安卓机的代理，就可以愉快的抓包了。
 
 
-#### 2、小程序通信过程分析
+### 2、小程序通信过程分析
 
-##### （1）检查绑定
+#### （1）检查绑定
 ```http
 GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/checkBinding?wxCode=031xAh0wasdsdasdasd3QDsZX2xAh0j HTTP/1.1
 Host: sport.cqupt.edu.cn
@@ -45,7 +45,7 @@ Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
 
 GET请求传参wxcode，这个wxcode是小程序调用微信提供的接口wx.login()获取，是作为微信用户登录的一个临时凭证，五分钟的有效期，只能使用一次，并且wx.login()调用时使用的是微信自己的通信协议，所以正常抓包抓不到。返回的结果也只有绑定成功和绑定失败，用于确定当前账号是否已经绑定过学生。
 
-##### （2）绑定学生
+#### （2）绑定学生
 ```http
 GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/wecatBindUnifyId?unifyId=167xxxx&studentNo=2029xxxxxx&wxCode=021tQn1w3G8Qk03T031w3UJtpi3tQn12 HTTP/1.1
 Host: sport.cqupt.edu.cn
@@ -73,7 +73,7 @@ Vary: Access-Control-Request-Headers
 
 GET请求传参统一认证吗、学号和wxcode，学号和认证号标识学生，wxcode标识微信用户，通过后会返回一个token作为小程序使用的一个临时凭证。有效期比wxcode长得多，换绑或者长时间没有和学校服务器通信都会失效。
 
-##### （3）开始打卡
+#### （3）开始打卡
 
 ```http
 POST https://sport.cqupt.edu.cn/wxapp/sportRecord/sport/start HTTP/1.1
@@ -104,7 +104,7 @@ Vary: Access-Control-Request-Headers
 ```
 POST请求，传参如上，header里需要带有token做为认证信息。返回内容中：**sportRecordNo** 将会作为后台数据记录和计算的一个标识id。
 
-##### （4）上传数据
+#### （4）上传数据
 
 ```http
 POST https://sport.cqupt.edu.cn/wxapp/sportRecord/point/saveList HTTP/1.1
@@ -152,7 +152,7 @@ Referer: https://servicewechat.com/wx1680cca9a19ee3c8/19/page-frame.html
 {"data":"dsdsd","aesKey":"OsbJTCvQkD0fykjod75FGwmrGoI2urOeto37x86jc+TJS3tYHlrVdtkYAJp/Kkn2GCe8hiXjPTRc2bhUIQoAqHMegd8xboq04b80uC+z+b6KoQ8eRj8T1zgR6XnRr3JbJthdRzFh8RJWtd/HSHsBrrrDpPifFY5zGiqGIrMCZrw="}
 ```
 
-##### （5）获取用户信息
+#### （5）获取用户信息
 ```http
 GET https://sport.cqupt.edu.cn/wxapp/wxUnifyId/getUser HTTP/1.1
 Host: sport.cqupt.edu.cn
@@ -180,7 +180,7 @@ Vary: Access-Control-Request-Headers
 ```
 GET请求，header里带token，用于获取学生的一些个人信息，本来这个接口与我们的目标无关，但四月后，他返回的信息里包含了一个公钥，用于加密saveList接口中要上传的数据。
 
-##### （6）结束打卡
+#### （6）结束打卡
 ```http
 POST https://sport.cqupt.edu.cn/wxapp/sportRecord/sport/endList HTTP/1.1
 Host: sport.cqupt.edu.cn
@@ -210,7 +210,7 @@ d2
 ```
 POST请求，传参一到五个定位点，header里带token，作为本次跑步的结束标志，返回结果里包含最终的里程数和耗时。
 
-##### （7）解除绑定
+#### （7）解除绑定
 ```http
 PUT https://sport.cqupt.edu.cn/wxapp/wxUnifyId/binding/unlock HTTP/1.1
 Host: sport.cqupt.edu.cn
@@ -228,12 +228,12 @@ Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
 
 少见的PUT请求，传参wxcode，认证码和学号，header带token，返回也很简单就是解绑成功或者失败。
 
-### 二、小程序逆向，获取加密方式
+## 二、小程序逆向，获取加密方式
 
-#### 1、起因
+### 1、起因
 按之前的抓包分析我们知道，小程序在请求saveList接口时，所上传的数据是经过加密的。我们上传时也需要把数据进行相同的处理，而具体的加密过程则可以在小程序内找到。
 
-#### 2、工具
+### 2、工具
 
 这里使用了开源工具 [wxappUnpacker](https://github.com/aen516954023/wxappUnpacker) 请参照连接内说明进行安装。
 
@@ -241,7 +241,7 @@ Referer: https://servicewechat.com/wx1680cca9a19ee3c8/16/page-frame.html
 
 实在找不到可以直接搜索 **wxapkg** 根据时间确定学校的小程序。
 
-#### 3、分析
+### 3、分析
 工具解包后的代码虽然是被压缩和混淆过的，但很多实例的方法名还是正常的，可读性还是很好的。
 
 因为被加密的请求只有saveList，所以我们可以尝试在各个文件中搜索这个字符串，看看能不能找到小程序在发送请求前进行了那些操作。
@@ -273,9 +273,32 @@ v又被作为密钥对收集的定位信息i进行了AES加密，模式为ECB，
 ![公钥](./pic/抓包/5.png)
 这个公钥应该就是RSA的公钥。
 
-#### 4、结论
+### 4、结论
 ![加密过程](./pic/逆向/6.png)
+
 学校的小程序并不是自己构建的这些加密算法，而是直接使用的公开库，所以我们也可以用这些库很方便得完成相同的加密过程。
 
+
+## 三、向自动化迈进
+
+### 1、先尝试实现半自动
+到目前为止除了wxcode我们尚无法获取外，其他小程序与服务器通信的过程我们完全可以自己在本地实现。
+
+相对于与wxcode，服务器返回的token则是个时效更长，获取更容易的认证票据，具体思路为：
+（1）打卡前绑定小程序
+（2）**抓包** 获取token
+（3）以该token为票据依次请求 **start** 、 **saveList** 和 **endList** 接口，完成一次有效的打卡数据上传。
+（4）解绑小程序（可选）。
+
+实现效果如图：
+![半自动打卡效果](./pic/抓包/7.jpg)
+
+这样打卡终究还是很麻烦，每次打卡前都需要抓包，移动端root过的手机一般来说不好找。也可以在出发前在电脑端抓到自己的token，然后再去打卡，一个token的有效期是足够的。
+
+无论哪种方法都是极不方便的，我们追求的是一种可以自动化的打卡体验，这就需要我们想办法去获取wxcode。
+
+### 自动化实现思路一：从小程序获取wxcode
+
+### 自动化实现思路二：从微信获取wxcode
 
 #TO BE CONTINUE...
