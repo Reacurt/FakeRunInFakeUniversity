@@ -333,6 +333,130 @@ v又被作为密钥对收集的定位信息i进行了AES加密，模式为ECB，
 
 wxcode最终还是微信生成的，尽管不能抓包获取请求方法，但是我们可以通过微信逆向与HOOK技术，在内存中调用微信相关的函数，获取到我们需要的code。
 
+~~碰巧微信不做客户端安全，你可以畅通无阻地读写他的内存、偷窥他的函数。~~
+
+#### 1、工具
+
+* ollyDbg: [OD](https://down.52pojie.cn/Tools/Debuggers/%E5%90%BE%E7%88%B1%E7%A0%B4%E8%A7%A3%E4%B8%93%E7%94%A8%E7%89%88Ollydbg.rar)
+* CE: [CE](https://cheatengine.org/)
+* HOOK: 微信的hook的入门可以看看 [B站大佬Hellmessage的教学](https://www.bilibili.com/video/BV1CA411N7EM/?spm_id_from=333.999.0.0&vd_source=94596833a1393fed8d99cbc2c4c35f1e) ，能看完第一个视频，调出微信的日志就可以了，微信的日志将作为我们寻找call的主要切入点。
+* 自制一个微信小程序：做一个只会用调用wx.login()的简单小程序，方便我们调试。
+  
+#### 2、寻找jslogin API的调用入口
+
+##### （1）分析微信日志
+
+调用一次wx.login(),查看一下相关的日志输出：
+
+```log
+
+(2023-4-16:3:16:22:927 16728)-i/WmpfAppletSDKImpl:AppletHostWrapper::JsApiHandlerCallback api_name=reportIDKey
+
+(2023-4-16:3:16:22:928 16728)-i/WmpfAppletSDKImpl:AppletHostWrapper::JsApiHandlerCallback api_name=login
+
+(2023-4-16:3:16:22:928 16728)-i/NetSceneJSLogin:new NetSceneJSLogin (id:96)
+
+(2023-4-16:3:16:22:928 16728)-i/NetSceneJSLogin:doSceneImpl(id:96)
+
+(2023-4-16:3:16:22:928 16728)-i/NetSceneBase:in send NetSceneJSLogin(id:96)
+
+(2023-4-16:3:16:22:929 16728)-i/WmpfAppletSDKImpl:AppletHostWrapper::JsApiHandlerCallback api_name=reportKeyValue
+
+(2023-4-16:3:16:22:929 16728)-i/WmpfAppletSDKImpl:AppletHostWrapper::JsApiHandlerCallback api_name=reportKeyValue
+
+(2023-4-16:3:16:22:929 18388)-i/NetSceneBase:encode
+
+(2023-4-16:3:16:22:929 18388)-i/NetSceneBaseEx:out NetSceneJSLogin::req2Buf size:141, id:96
+
+(2023-4-16:3:16:23:164 18388)-i/NetSceneBaseEx:out NetSceneJSLogin::buf2Resp unpackSize: 54, id:96
+
+(2023-4-16:3:16:23:164 18388)-i/WinMarsMgr:onGYNetEnd sceneID:96 errType:0  errCode:0
+
+(2023-4-16:3:16:23:165 02704)-i/NetSceneJSLogin:onGYNetEnd(errType:0, errCode:0, sceneID:96)
+
+(2023-4-16:3:16:23:165 02704)-i/NetSceneJSLogin:~NetSceneJSLogin (id:96)
+
+(2023-4-16:2:12:32:294 15332)-i/FTSThreadHelper:RangeInfo FTSMultiDBMsgMgr Range : Start Index : 0, Start Id : 0 endId 23, End Index : 0, StartId : 0 EndId 23
+```
+这段日志中有两个API调用的信息，很明显我们只需要关注id为96和Login有关的日志。
+
+大致流程为：
+|日志信息|作用|
+|---|---|
+|JsApiHandlerCallback api_name=login |系统调用Login api|
+| new NetSceneJSLogin |实例化一个Login请求|
+| doSceneImpl| |
+| in send NetSceneJSLogin | 准备发送Login求情|
+| encoden | 编码请求|
+| req2Buf |从缓存读入请求|
+| buf2Resp |将返回读入缓存|
+| onGYNetEnd | 处理返回结果|
+| ~NetSceneJSLogin |清除这个login请求实例|
+
+##### （2）寻找调用入口
+
+通过日我们得知，调用login API时微信会生成一个对应的实例，实例内地方法会完成后续地操作。所以我们可以找它调用API入口。
+
+打开OD和微信，将微信附加到OD中，选择模块 **WeChatWin.dll**（微信主要的逻辑在这个模块中实现），通过OD的中文搜索引擎插件搜索字符串，如果搜索没有结果，把把进程暂停一下就搞搜索了。再搜索字串"JsApiHandlerCallback api_name",跳转到对应行：
+
+![初始化login](./pic/逆向/10.png)
+
+可以看到这是准备打印日志，这里已经是进入到 **JsApiHandlerCallback** 函数里了，可以在这里下断点，向上找函数入口。可以想一下，调用login至少要传入三个参数：小程序的Appid、login有关字符串、请求id。所以在每次到一个call时可以检查一下栈顶和寄存器看看是否包含这些内容。
+
+![login入口](./pic/逆向/12.jpg)
+
+可以看到这个call前，栈里压了五个参数，两个意义不明的整数，一个json、login字符串和小程序appid。这样的结构符合我们的预期，这个call就可以作为我们调用 **wx.login()** 的入口函数，那两个意义不明的整数经过置零测试后发现不影响返回值，并且在调用这个函数时，EXD中必须保留 **appid** 的字符串指针，否则没有结果。
+
+微信版本[3.9.2.23]可以调用wx.login的地址为  **WeChatWin.dll + 0x757E60**
+
+##### （3）读出返回的code
+
+在前面的日志分析中我们得知，JSLogin API也是向微信服务器发送了一次请求，即使我们调用了入口函数，也无法立即得到code，需要等微信将请求回复处理后，我们再从内存中读出来。
+
+我可以先通过CE搜索已知的code，找到每次code处理完后被存放的地址（这个地址是变动的无基址），然后再找出是哪个call改变了这个地址的code，那么这个call附近肯定有我们想要的code。
+
+![code存入地址](./pic/逆向/13.png)
+
+之后和寻找入口的流程类似，我们可以搜索字符串 **"onGYNetEnd"** 进入到处理结果的函数，然后向下寻找，只要某个call在那个地址里写入了新code就下断点进去看看。
+
+![断点数](./pic/逆向/11.png)
+
+大概下了找了9个函数后，终于找到了一个合适的位置：
+
+![Hook点](./pic/逆向/14.png)
+
+在这个call这里，EAX和栈顶都有我们想要的code，同时这个call刚好有5个字节供我们hook，在这里hook一个函数读出exa指向的字符串，目的就达到了。
 
 
-#TO BE CONTINUE...
+微信版本[3.9.2.23]可以下HOOK读取code的地址为 **WeChatWin.dll + 0xFD8071**
+
+##### （4）拼接工作
+
+按上面的思路写好Hook，加一个http服务与python通信，将写好的dll注入到微信就可以了。
+
+效果如图：
+
+![hook效果](./pic/逆向/16.gif)
+
+
+## 四、完结
+
+所以整个流程下来就是
+
+|流程|
+|---|
+|获取code|
+|绑定获取token|
+|开始打卡获取记录id|
+|上传打卡数据|
+|结束打卡|
+|获取code|
+|解除绑定|
+
+最终效果如图：
+
+![最终效果](./pic/逆向/15.jpg)
+
+这个思路到 2023/04/22 为止有效。 
+~~这样不过仅仅也只是小程序有效，还是需要本人到操场打四次卡，虽说可以随便打，但是不用小程序也只需要打七次卡就可以了。能扫上四次脸的人真的会缺那3次么，花那么多钱做的小程序就这么点作用？那些坐办公室的领导真的该动动脑子了，不要搞假政绩了。~~
+ 
