@@ -1,0 +1,16 @@
+﻿  pch.cpp
+  dllmain.cpp
+  hookCall.cpp
+  HTools.cpp
+  httpserver.cpp
+  HUtil.cpp
+  cJSON.c
+  CJsonObject.cpp
+  md5.cpp
+  tinyxml2.cpp
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+D:\My_program\C-C++\vs2022\HARcode\hookCall.cpp(62): warning C4731: “callLoginAPI”: 框架指针寄存器“ebx”被内联程序集代码修改
+  All 606 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  HLog.vcxproj -> D:\My_program\C-C++\vs2022\HARcode\Release\HARcode.dll

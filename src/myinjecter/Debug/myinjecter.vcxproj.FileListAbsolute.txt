@@ -1,0 +1,2 @@
+D:\My program\C-C++\vs2022\myinjecter\Debug\myinjecter.exe
+D:\My_program\C-C++\vs2022\myinjecter\Debug\myinjecter.exe

@@ -1,0 +1,3 @@
+﻿  injecter.cpp
+D:\My program\C-C++\vs2022\myinjecter\injecter.cpp(16): warning C4172: 返回局部变量或临时变量的地址: current_path
+  myinjecter.vcxproj -> D:\My program\C-C++\vs2022\myinjecter\x64\Debug\myinjecter.exe
